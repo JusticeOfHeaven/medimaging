@@ -1,0 +1,88 @@
+apply plugin: 'com.android.library'
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply from:'config.gradle'
+
+android {
+    compileSdkVersion 28
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    //在Android代码块中添加如下配置：（可优化最上图中transformClassDexBuilderForDebug的时间）
+    android {
+        dexOptions {
+            preDexLibraries true
+            maxProcessCount 8
+        }
+    }
+
+}
+//优化kotlin编译速度，如果有用到kapt添加如下配置
+kapt {
+    useBuildCache = true
+    javacOptions {
+        // 增加注解处理器的最大错误次数 默认为100
+        option("-Xmaxerrs", 500)
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    api (
+            deps.supportV4,
+            deps.appcompatV7,
+            deps.design,
+            deps.cardview,
+            deps.annotations,
+            deps.recyclerview,
+            deps.gridlayout,
+            deps.percent,
+            deps.constraint
+    )
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Rxjava2
+    api 'io.reactivex.rxjava2:rxjava:2.2.7'
+    api 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    // OkHttp
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.squareup.okhttp3:okhttp-android-support:$okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    // Retrofit
+    api "com.squareup.retrofit2:retrofit:$retrofit2"
+    api "com.squareup.retrofit2:adapter-rxjava2:$retrofit2"
+    api "com.squareup.retrofit2:converter-gson:$retrofit2"
+    // Glide
+    api "com.github.bumptech.glide:glide:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
+
+
+
+}
+repositories {
+    mavenCentral()
+}
